@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import ClerkThemeProvider from '@/components/ClerkThemeProvider';
+import AuthProvider from '@/components/AuthProvider';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { ThemeProvider } from '@/contexts/ThemeContext';
@@ -50,9 +51,11 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <ClerkThemeProvider>
-            <Navbar />
-            {children}
-            <Footer />
+            <AuthProvider>
+              <Navbar />
+              {children}
+              <Footer />
+            </AuthProvider>
           </ClerkThemeProvider>
         </ThemeProvider>
       </body>
