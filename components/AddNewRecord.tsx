@@ -5,7 +5,7 @@ import addExpenseRecord from '@/app/actions/addExpenseRecord';
 
 const AddRecord = () => {
   const formRef = useRef<HTMLFormElement>(null);
-  const [amount, setAmount] = useState(50); // Default value for expense amount
+  const [amount, setAmount] = useState<number | ''>(''); // No default value, user will input
   const [alertMessage, setAlertMessage] = useState<string | null>(null); // State for alert message
   const [alertType, setAlertType] = useState<'success' | 'error' | null>(null); // State for alert type
   const [isLoading, setIsLoading] = useState(false); // State for loading spinner
@@ -13,9 +13,16 @@ const AddRecord = () => {
   const [description, setDescription] = useState(''); // State for expense description
   const [isCategorizingAI, setIsCategorizingAI] = useState(false); // State for AI categorization loading
 
-  const clientAction = async (formData: FormData) => {
+    const clientAction = async (formData: FormData) => {
     setIsLoading(true); // Show spinner
     setAlertMessage(null); // Clear previous messages
+
+    if (amount === '') {
+      setAlertMessage('Please enter an amount');
+      setAlertType('error');
+      setIsLoading(false);
+      return;
+    }
 
     formData.set('amount', amount.toString()); // Add the amount value to the form data
     formData.set('category', category); // Add the selected category to the form data
@@ -233,23 +240,27 @@ const AddRecord = () => {
               <span className='w-1.5 h-1.5 bg-green-500 rounded-full'></span>
               Amount
               <span className='text-xs text-gray-400 dark:text-gray-500 ml-2 font-normal hidden sm:inline'>
-                Enter amount between $0 and $1,000
+                Enter amount between Rs. 0 and Rs. 100,000
               </span>
             </label>
             <div className='relative'>
               <span className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 font-medium text-sm'>
-                $
+                Rs.
               </span>
               <input
                 type='number'
                 name='amount'
                 id='amount'
                 min='0'
-                max='1000'
-                step='0.01'
+                max='100000'
+                step='1'
                 value={amount}
-                onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
-                className='w-full pl-6 pr-3 py-2.5 bg-white/70 dark:bg-gray-800/70 border-2 border-gray-200/80 dark:border-gray-600/80 rounded-xl focus:ring-2 focus:ring-emerald-500/30 focus:bg-white dark:focus:bg-gray-700/90 focus:border-emerald-400 dark:focus:border-emerald-400 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 text-sm font-semibold shadow-sm hover:shadow-md transition-all duration-200'
+                onChange={(e) => {
+                  const val = e.target.value;
+                  // Remove leading zeros and set empty string if no value
+                  setAmount(val === '' ? '' : parseInt(val.replace(/^0+/, '')) || 0);
+                }}
+                className='w-full pl-10 pr-3 py-2.5 bg-white/70 dark:bg-gray-800/70 border-2 border-gray-200/80 dark:border-gray-600/80 rounded-xl focus:ring-2 focus:ring-blue-500/30 focus:bg-white dark:focus:bg-gray-700/90 focus:border-blue-400 dark:focus:border-blue-400 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 text-sm font-semibold shadow-sm hover:shadow-md transition-all duration-200'
                 placeholder='0.00'
                 required
               />
